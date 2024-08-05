@@ -8,3 +8,4 @@ Dockerfile
 *.log
 *.test.js
 *.spec.js
+docker-compose.yml

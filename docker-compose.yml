@@ -41,8 +41,6 @@ services:
   backend:
     container_name: backend
     build: .
-    volumes:
-      - ./:/usr/src/app
     ports:
       - "3000:3000"
     networks:
