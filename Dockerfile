@@ -6,10 +6,7 @@ COPY package*.json ./
 
 COPY . .
 
-RUN npm install
-
-RUN npm install -g nodemon
-RUN npm install -g ts-node
+RUN npm install && npm install -g nodemon &&  npm install -g ts-node
 
 EXPOSE 3000
 

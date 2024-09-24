@@ -7,4 +7,8 @@ export interface ProductRepository {
   findByIdOrThrow(id: string): Promise<Product>;
   restock(id: string): Promise<void>;
   sell(id: string, unitOfWork?: UnitOfWork): Promise<void>;
+  decreaseProductsQuantitiesOrThrow(
+    ids: string[],
+    unitOfWork?: UnitOfWork,
+  ): Promise<void>;
 }

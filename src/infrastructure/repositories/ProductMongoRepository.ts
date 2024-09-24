@@ -76,4 +76,41 @@ export class ProductMongoRepository implements ProductRepository {
       { session },
     );
   }
+
+  async decreaseProductsQuantitiesOrThrow(
+    ids: string[],
+    unitOfWork: UnitOfWork<ClientSession>,
+  ): Promise<void> {
+    const session = unitOfWork ? unitOfWork.getSession() : undefined;
+
+    const updatePromises = ids.map((id) =>
+      this.collection.findOneAndUpdate(
+        {
+          _id: new ObjectId(id),
+          stock: { $gte: 0 },
+        },
+        {
+          $inc: { stock: -1 },
+        },
+        {
+          session,
+        },
+      ),
+    );
+
+    const results = await Promise.all(updatePromises);
+    const insufficientStockProducts: string[] = [];
+
+    results.forEach((result, index) => {
+      if (!result) {
+        insufficientStockProducts.push(ids[index]);
+      }
+    });
+
+    if (insufficientStockProducts.length > 0) {
+      throw new Error(
+        `Insufficient stock for products: ${insufficientStockProducts.join(", ")}`,
+      );
+    }
+  }
 }

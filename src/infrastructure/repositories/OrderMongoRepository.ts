@@ -1,7 +1,8 @@
 import { OrderRepository } from "../../domain/repositories/OrderRepository";
-import { OrderPersistent } from "../../domain/models/Order";
+import { Order, OrderPersistent } from "../../domain/models/Order";
 import { MongoClient, ObjectId, Decimal128, ClientSession } from "mongodb";
 import { UnitOfWork } from "../../domain/repositories/UnitOfWork";
+import { OrderFactory } from "../../domain/factories/OrderFactory";
 
 export class OrderMongoRepository implements OrderRepository {
   private collectionName: string;
@@ -35,5 +36,16 @@ export class OrderMongoRepository implements OrderRepository {
       { $set: orderDocument },
       { upsert: true, session },
     );
+  }
+
+  async findByIdOrThrow(id: string): Promise<Order> {
+    const order = await this.collection.findOne({ _id: new ObjectId(id) });
+    if (!order) {
+      throw new Error(`Order with ID ${id} not found.`);
+    }
+    return OrderFactory.create({
+      id: order._id.toHexString(),
+      customerId: order.customerId,
+    });
   }
 }

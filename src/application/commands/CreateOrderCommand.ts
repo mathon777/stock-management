@@ -15,25 +15,14 @@ export class CreateOrderCommand {
   async execute(orderInputDTO: OrderInputDTO): Promise<void> {
     await this.unitOfWork.start();
 
+    const order = OrderFactory.create({
+      customerId: orderInputDTO.customerId,
+    });
+
     try {
-      const order = OrderFactory.create({
-        customerId: orderInputDTO.customerId,
-      });
-
-      await Promise.all(
-        orderInputDTO.products.map(async (productId) => {
-          const product =
-            await this.productRepository.findByIdOrThrow(productId);
-
-          product.sell();
-          order.addOrderItem(product.getId(), product.getPriceValue());
-        }),
-      );
-
-      await Promise.all(
-        orderInputDTO.products.map(async (productId) =>
-          this.productRepository.sell(productId, this.unitOfWork),
-        ),
+      await this.productRepository.decreaseProductsQuantitiesOrThrow(
+        orderInputDTO.products,
+        this.unitOfWork,
       );
 
       await this.orderRepository.save(order.toPersistent(), this.unitOfWork);

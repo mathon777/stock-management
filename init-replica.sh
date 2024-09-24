@@ -8,7 +8,7 @@ var config = {
         {
             "_id": 1,
             "host": "mongo1:27017",
-            "priority": 3
+            "priority": 1
         },
         {
             "_id": 2,
@@ -17,11 +17,11 @@ var config = {
         },
         {
             "_id": 3,
-            "host": "mongo3:27017",
-            "priority": 1
+            "host": "mongo3:27017"
         }
     ]
 };
+rs.addArb("mongo3:27017")
 rs.initiate(config, { force: true });
 rs.status();
 EOF

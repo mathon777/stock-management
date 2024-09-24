@@ -39,7 +39,6 @@ export class ProductController {
   async getProducts(req: Request, res: Response) {
     try {
       const products = await this.getProductsQuery.execute();
-
       res.status(200).json(products);
     } catch (error) {
       if (error instanceof Error) {

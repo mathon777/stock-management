@@ -11,6 +11,15 @@ export const mongoClient = async () => {
     await client.connect();
     console.log("Mongo connected");
 
+    const db = client.db("mydb");
+    const result = await db.command({ ping: 1 });
+
+    if (result.ok === 1) {
+      console.log("Database connection is healthy");
+    } else {
+      throw new Error("Database ping failed");
+    }
+
     return client;
   } catch (err) {
     console.error("Error connecting to MongoDB:", err);
